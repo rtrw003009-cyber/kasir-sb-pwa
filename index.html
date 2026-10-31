@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -9,66 +10,138 @@
 
   <link rel="manifest" href="./manifest.json?v=4">
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
-  <link rel="apple-touch-icon" href="./icon-192.png">
 
   <style>
-    * { box-sizing: border-box; }
-    body {
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
       margin: 0;
-      min-height: 100vh;
-      padding: 24px;
-      display: grid;
-      place-items: center;
       font-family: Arial, sans-serif;
       background: #f4f6f5;
-      color: #173d31;
-      text-align: center;
     }
+
+    #welcome {
+      min-height: 100%;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: #f4f6f5;
+      color: #173d31;
+    }
+
     .container {
       width: 100%;
       max-width: 420px;
       padding: 28px 20px;
-      background: #fff;
+      background: white;
       border-radius: 18px;
       box-shadow: 0 4px 18px #00000012;
     }
+
     .logo {
       width: 112px;
       height: 112px;
       object-fit: contain;
-      margin-bottom: 12px;
     }
-    h1 { margin: 8px 0; }
-    p { color: #4b5563; line-height: 1.6; }
-    .button {
-      display: block;
+
+    h1 {
+      margin: 12px 0;
+    }
+
+    p {
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    button {
+      width: 100%;
       margin-top: 24px;
-      padding: 15px;
+      padding: 16px;
+      border: 0;
       border-radius: 10px;
       background: #173d31;
       color: white;
-      text-decoration: none;
+      font-size: 16px;
       font-weight: bold;
+      cursor: pointer;
     }
-    .note { margin-top: 22px; font-size: 12px; }
+
+    .note {
+      margin-top: 22px;
+      font-size: 12px;
+    }
+
+    #appFrame {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: white;
+    }
+
+    #loading {
+      display: none;
+      position: fixed;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      color: #173d31;
+      font-size: 16px;
+    }
   </style>
 </head>
+
 <body>
-  <main class="container">
-    <img class="logo" src="./icon-512.png" alt="Logo SB Digital Studio">
-    <h1>KASIR SB</h1>
-    <p>Aplikasi kasir digital untuk toko dan warung Anda.</p>
 
-    <a class="button"
-       href="https://script.google.com/macros/s/AKfycbxCZGEQcWM9_pJcdwnfHtIiV0GMFBp1wyU69ua4_xw1Mjj1CQ1hcFp68vc6JGcUHOeA/exec"
-       target="_blank" rel="noopener">
-      Buka Aplikasi Kasir
-    </a>
+  <main id="welcome">
+    <div class="container">
+      <img class="logo" src="./icon-512.png" alt="Logo SB Digital Studio">
 
-    <p class="note">Powered by SB Digital Studio</p>
+      <h1>KASIR SB</h1>
+      <p>Solusi kasir praktis untuk toko dan warung Anda.</p>
+
+      <button onclick="openApp()">
+        🔐 Buka Aplikasi Kasir
+      </button>
+
+      <p class="note">Powered by SB Digital Studio</p>
+    </div>
   </main>
 
+  <div id="loading">Memuat aplikasi kasir...</div>
+
+  <iframe
+    id="appFrame"
+    title="Aplikasi KASIR SB"
+    allow="clipboard-read; clipboard-write"
+    allowfullscreen>
+  </iframe>
+
   <script>
+    const APP_URL =
+      "https://script.google.com/macros/s/AKfycbxCZGEQcWM9_pJcdwnfHtIiV0GMFBp1wyU69ua4_xw1Mjj1CQ1hcFp68vc6JGcUHOeA/exec";
+
+    function openApp() {
+      document.getElementById("welcome").style.display = "none";
+      document.getElementById("loading").style.display = "flex";
+      document.getElementById("appFrame").style.display = "block";
+
+      document.getElementById("appFrame").src = APP_URL;
+
+      document.getElementById("appFrame").onload = function() {
+        document.getElementById("loading").style.display = "none";
+      };
+    }
+
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("./service-worker.js")
@@ -76,5 +149,6 @@
       });
     }
   </script>
+
 </body>
 </html>
