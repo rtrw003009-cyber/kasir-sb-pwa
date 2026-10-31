@@ -1,4 +1,5 @@
-const CACHE_NAME = "kasir-sb-pwa-v1";
+const CACHE_NAME = "kasir-sb-pwa-v2";
+
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -18,13 +19,20 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)));
+
+    await Promise.all(
+      keys
+        .filter(key => key.startsWith("kasir-sb-pwa-") && key !== CACHE_NAME)
+        .map(key => caches.delete(key))
+    );
+
     await self.clients.claim();
   })());
 });
 
 self.addEventListener("fetch", event => {
   const request = event.request;
+
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
@@ -33,14 +41,17 @@ self.addEventListener("fetch", event => {
   event.respondWith((async () => {
     try {
       const response = await fetch(request);
+
       if (response && response.ok) {
         const cache = await caches.open(CACHE_NAME);
-        cache.put(request, response.clone());
+        await cache.put(request, response.clone());
       }
+
       return response;
     } catch (error) {
       const cached = await caches.match(request);
       if (cached) return cached;
+
       throw error;
     }
   })());
